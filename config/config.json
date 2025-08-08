@@ -1,0 +1,21 @@
+{
+    "mysql": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "miqroforge",
+        "password": "miqroforge@2025.",
+        "database": "miqroforge",
+        "db_name": "miqroforge"
+    },
+    "minio": {
+        "host": "localhost",
+        "port": 9000,
+        "user": "miqroforge",
+        "password": "miqroforge@2025."
+    },
+    "miqroforge": {
+        "image": "miqroera01/miqroforge:v1.0",
+        "host": "localhost",
+        "port": 30080
+    }
+}

@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "miqroforge"
+version = "0.1.0"
+description = "MiqroForge 计算集群管理命令行工具"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "MiqroForge Team", email = "team@miqroforge.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Clustering",
+    "Topic :: System :: Distributed Computing",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.scripts]
+miqroforge = "miqroforge.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/miqroforge/miqroforge"
+Repository = "https://github.com/miqroforge/miqroforge.git"
+Documentation = "https://miqroforge.readthedocs.io/"
+"Bug Tracker" = "https://github.com/miqroforge/miqroforge/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["miqroforge*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
