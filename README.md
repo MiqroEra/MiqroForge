@@ -53,10 +53,13 @@ K3s是一个轻量级的Kubernetes发行版，适合开发和测试环境：
 
 ```bash
 # 快速安装K3s v1.24.7
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.24.7+k3s1" sh -
+export LOCAL_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.24.7+k3s1" sh -s server --bind-address=$LOCAL_IP --node-ip=$LOCAL_IP --node-name=master
+cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 
 # 验证安装
 kubectl get nodes
+kubectl get pods -n kube-system
 ```
 
 ### 方式二：使用 KubeKey 安装Kubernetes v1.24.7

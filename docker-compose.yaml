@@ -2,6 +2,7 @@ version: '3.8'
 services:
   minio:
     image: minio/minio:RELEASE.2022-06-11T19-55-32Z
+    container_name: miqroforge-minio
     ports:
       - 9000:9000
       - 9001:9001
@@ -10,34 +11,60 @@ services:
       - MINIO_ROOT_PASSWORD=miqroforge@2025.
     volumes:
       - ./data/minio:/data
-    command: server /data --console-address ":9001" --address ":9000"
+    command: server /data --address ":9000" --console-address ":9001" 
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 40s
     networks:
-      - miqroforge-network
+      - default
 
   mysql:
     image: mysql:8.0
+    container_name: miqroforge-mysql
     ports:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=miqroforge@2025.
+      - MYSQL_DATABASE=miqroforge
+      - MYSQL_USER=miqroforge
+      - MYSQL_PASSWORD=miqroforge@2025.
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - ./config/miqroforge.sql:/docker-entrypoint-initdb.d/miqroforge.sql
     command: --default-authentication-plugin=mysql_native_password  
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      timeout: 20s
+      interval: 10s
+      retries: 10
+      start_period: 40s
     networks:
-      - miqroforge-network
+      - default
 
-  miqroforge:
+  web:
+    container_name: miqroforge-web
+    depends_on:
+      - minio
+      - mysql
     image: miqroera01/miqroforge:v1.0
+    restart: always
     ports:
-      - 30080:30080
+      - "${SERVER_PORT:-30080}:80"
     environment:
-      - MYSQL_HOST=localhost
-      - MYSQL_PORT=3306
-      - MYSQL_DB=miqroforge
-      - MYSQL_USER=miqroforge
+      - "NFS_SERVER_IP=${NFS_SERVER_IP:?You must set the NFS_SERVER_IP environment variable}"
+      - "NFS_SERVER_EXPORT_PATH=${NFS_SERVER_EXPORT_PATH:?You must set the NFS_SERVER_EXPORT_PATH environment variable}"
+    volumes:
+      - ./data/miqroforge/backend/logs:/opt/project/miqroforge/backend/logs
+      - ./config/application-dev.yml:/opt/project/miqroforge/backend/application-dev.yml
+      - /root/.kube/config:/opt/project/miqroforge/backend/misc/k8s/config
+    networks:
+      - default
 
 networks:
-  miqroforge-network:
+  default:
     driver: bridge
-
-  

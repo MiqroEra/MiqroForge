@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qsci-workflow
+  namespace: default
+  labels:
+    app: qsci-workflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qsci-workflow
+  template:
+    metadata:
+      labels:
+        app: qsci-workflow
+    spec:
+      containers:
+      - name: qsci-workflow
+        image: miqroera01/miqroforge_qsci_workflow:v1.1
+        imagePullPolicy: IfNotPresent

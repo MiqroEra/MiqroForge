@@ -465,6 +465,8 @@ run_minio_container() {
     log_success "Minio 环境准备完成！"
 }
 
+# 使用 docker 安装 nfs 服务
+
 
 
 # 主安装函数
@@ -494,8 +496,6 @@ install_miqroforge() {
 
     # 运行 Minio 容器
     run_minio_container
-
-    docker run -d --name miqroforge 
 
 
     log_success "MiqroForge环境准备完成！"
