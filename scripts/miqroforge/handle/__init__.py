@@ -4,14 +4,9 @@
 """
 
 from .show import handle_show
-from .status import handle_status
 from .resources import handle_resources
-from .task import handle_task_submit, handle_task_list
 
 __all__ = [
     "handle_show",
-    "handle_status", 
     "handle_resources",
-    "handle_task_submit",
-    "handle_task_list"
 ]
