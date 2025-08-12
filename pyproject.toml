@@ -27,14 +27,21 @@ classifiers = [
     "Topic :: System :: Distributed Computing",
 ]
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "kubernetes",
+    "docker",
+    "mysql-connector-python",
+    "sqlalchemy",
+    "pymysql",
+    "tabulate"
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
     "black",
     "flake8",
-    "mypy",
+    "mypy"
 ]
 
 [project.scripts]
@@ -47,7 +54,7 @@ Documentation = "https://miqroforge.readthedocs.io/"
 "Bug Tracker" = "https://github.com/miqroforge/miqroforge/issues"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["scripts"]
 include = ["miqroforge*"]
 
 [tool.black]

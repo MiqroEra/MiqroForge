@@ -1,0 +1,14 @@
+# MiqroForge 项目依赖包
+
+# 核心依赖
+kubernetes>=28.1.0
+docker>=6.1.0
+mysql-connector-python>=8.0.0
+sqlalchemy>=2.0.0
+pymysql>=1.1.0
+
+# 开发依赖
+pytest>=7.0.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
