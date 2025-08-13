@@ -58,3 +58,6 @@ sudo k3s-uninstall.sh
 
 ## 故障排除
 详情请参考: [troubleshooting.md](docs/troubleshooting_zh-CN.md)
+
+## 文档
+详情请参考: [MiqroForge 文档](https://miqroforge-docs.readthedocs.io/zh-cn/latest)
