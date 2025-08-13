@@ -1,3 +1,5 @@
+> English | [中文](README_zh-CN.md) 
+
 # MiqroForge Installation Script
 
 This is an automated installation script for quickly deploying and configuring the MiqroForge microservice architecture platform on Linux systems. The script integrates a complete containerized runtime environment, including storage, database, web services, and other core components.
@@ -50,13 +52,9 @@ sudo k3s-uninstall.sh
 ```
 
 - Other installation methods:
-    - [kubekey installation documentation](https://github.com/kubesphere/kubekey/blob/master/README_zh-CN.md)
+    - [kubekey installation documentation](https://github.com/kubesphere/kubekey/blob/master/README.md)
     - [Kubernetes official documentation](https://kubernetes.io/docs/setup/)
 
 ## Troubleshooting
 For details, please refer to: [troubleshooting.md](docs/troubleshooting.md)
 
-## Language
-
-- [English](README.md) (Current)
-- [中文](README_zh_CN.md)

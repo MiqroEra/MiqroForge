@@ -1,3 +1,5 @@
+> [English](README.md) | 中文 
+
 # MiqroForge 安装脚本
 
 这是一个自动化安装脚本，用于在Linux系统上快速部署和配置MiqroForge微服务架构平台。脚本集成了完整的容器化运行环境，包括存储、数据库、Web服务等核心组件。
@@ -56,8 +58,3 @@ sudo k3s-uninstall.sh
 
 ## 故障排除
 详情请参考: [troubleshooting.md](docs/troubleshooting.md)
-
-## 语言选择
-
-- [English](README.md)
-- [中文](README_zh_CN.md) (当前)
