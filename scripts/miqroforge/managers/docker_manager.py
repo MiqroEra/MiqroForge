@@ -82,13 +82,15 @@ class DockerManager:
         image_names = []
         for image in images:
             if image.tags is not None and len(image.tags) > 0:
-                image_names.append(image.tags[0])
+                image_names.extend(image.tags)
 
         return image_names
 
     def check_image_exists(self, image: str) -> bool:
+        # print(f"image: {image}")
         """检查镜像是否存在"""
         for image_name in self.list_images():
+            # print(f"image_name: {image_name}")
             if image in image_name:
                 return True
         return False
@@ -108,24 +110,31 @@ class DockerManager:
         """连接Docker"""
         return self.test_connection()
 
+    def get_node_description(self, image: str, app_path: str) -> str:
+        """获取节点描述"""
+        container = None
+        try:
+            container = self.client.containers.run(image, command=f"bash -c 'cd {app_path} && cat help.md'", detach=False, remove=True)
+            description = container.decode('utf-8')
+            print(f"description: \n{description}\n")
+            return description
+        except Exception as e:
+            logger.error(f"get node description failed: {e}")
+            self.remove_failed_containers()
+            return ''
+
     def get_node_json(self, image: str, app_path: str) -> dict:
         """获取节点JSON"""
         container = None
         try:
             container = self.client.containers.run(image, command=f"bash -c 'cd {app_path} && cat node.json'", detach=False, remove=True)
-            node_json = container.decode('utf-8')
-            return json.loads(node_json)
+            node_json_str = container.decode('utf-8')
+            node_json = json.loads(node_json_str)
+            node_json['description'] = self.get_node_description(image, app_path)
+            return node_json
         except Exception as e:
             logger.error(f"read node.json failed: {e}")
-            # 如果容器创建成功但执行失败，确保删除它
-            if container and not container.attrs.get('State', {}).get('Running', False):
-                try:
-                    container.remove(force=True)
-                    logger.info(f"清理失败的容器: {container.id}")
-                except Exception as cleanup_error:
-                    logger.warning(f"清理失败容器时出错: {cleanup_error}")
-            else:
-                self.remove_failed_containers()
+            self.remove_failed_containers()
             return None
 
     def list_containers(self, all_containers: bool = True) -> List[dict]:
