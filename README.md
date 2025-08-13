@@ -1,18 +1,21 @@
 # MiqroForge 安装脚本
 
-这是一个自动化安装脚本，用于在Linux系统上安装和配置MiqroForge运行环境。
+这是一个自动化安装脚本，用于在Linux系统上快速部署和配置MiqroForge微服务架构平台。脚本集成了完整的容器化运行环境，包括存储、数据库、Web服务等核心组件。
 
 ## 功能特性
 
-- **Docker自动安装**: 支持Ubuntu >= 20.04 操作系统
-- **跨平台支持**: 支持多种Linux发行版
-- **轻量级**: 专注于Docker环境准备，Kubernetes需要手动安装
+- **一键部署**: 自动化安装Docker、Python、NFS、K3s等所有依赖组件
+- **容器化架构**: 基于Docker Compose的微服务部署，支持快速启动和扩展
+- **存储集成**: 内置MinIO对象存储和MySQL数据库，提供完整的数据存储解决方案
+- **Kubernetes就绪**: 自动安装K3s轻量级Kubernetes集群，支持容器编排
+- **网络服务**: 集成NFS文件共享服务，支持分布式文件系统
+- **Web界面**: 提供基于Web的管理界面，支持通过浏览器访问和管理
 
 ## 系统要求
 
-- Linux操作系统（Ubuntu/Debian）
+- Ubuntu >= 20.04 操作系统
 - 具有root权限或sudo权限
-- 网络连接（用于下载Docker）
+- 网络连接（用于下载Docker、Python、NFS、K3s等所有依赖组件）
 - 至少2GB内存和10GB磁盘空间
 
 ## 使用方法
