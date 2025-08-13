@@ -56,6 +56,10 @@ sudo k3s-uninstall.sh
     - [kubekey 安装文档](https://github.com/kubesphere/kubekey/blob/master/README_zh-CN.md)
     - [Kubernetes 官方文档](https://kubernetes.io/zh/docs/setup/)
 
+## 测试
+
+详情请参考: [test.ipynb](tests/test_cases.ipynb)
+
 ## 故障排除
 详情请参考: [troubleshooting.md](docs/troubleshooting_zh-CN.md)
 

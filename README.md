@@ -55,6 +55,10 @@ sudo k3s-uninstall.sh
     - [kubekey installation documentation](https://github.com/kubesphere/kubekey/blob/master/README.md)
     - [Kubernetes official documentation](https://kubernetes.io/docs/setup/)
 
+## Test
+
+For details, please refer to: [test_cases.ipynb](tests/test_cases.ipynb)
+
 ## Troubleshooting
 For details, please refer to: [troubleshooting.md](docs/troubleshooting.md)
 
