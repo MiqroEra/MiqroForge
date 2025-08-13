@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+from textwrap import dedent
 
 # 导入 handle 函数
 from miqroforge.handle import (
@@ -40,8 +41,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     node_parser = subparsers.add_parser("node", help="查看节点模板信息")
     
-    node_parser.add_argument("--add", type=str, help="添加自定义节点")
-
+    node_parser.add_argument("--add", nargs=2, metavar=('IMAGE', 'APP_PATH'), 
+                        help="添加自定义节点，格式: --add <镜像名称> <项目路径>")
+    
     node_parser.set_defaults(func=handle_node)
 
     return parser

@@ -97,7 +97,10 @@ CREATE TABLE `node`  (
   `contact` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL COMMENT '联系人信息',
   `execution_command` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '执行命令',
   `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '镜像地址',
-  PRIMARY KEY (`id`) USING BTREE
+  `created_time` datetime NOT NULL DEFAULT current_timestamp COMMENT '创建时间',
+  `updated_time` datetime NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_created_time` (`created_time`) USING BTREE,
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '节点信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
