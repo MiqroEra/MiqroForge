@@ -53,7 +53,7 @@ NODE_HEADERS_MAP: Dict[str, str] = {
     "name_en": "英文名称",
     "status": "状态",
     "data_dir": "数据目录",
-    "job_num": "作业编号",
+    "job_num": "作业数量",
     "created_time": "创建时间"
 }
 
@@ -114,7 +114,7 @@ def get_param_type_str(type_code: int) -> str:
     }
     return param_type_map.get(type_code, "未知类型")
 
-def fetch_tasks(mysql_manager: MySQLManager, limit: int) -> List[Tuple]:
+def fetch_tasks(mysql_manager: MySQLManager, limit: int) -> List:
     """从数据库获取任务列表。"""
     if mysql_manager.cursor is None:
         raise RuntimeError("数据库游标创建失败")
@@ -128,7 +128,7 @@ def fetch_tasks(mysql_manager: MySQLManager, limit: int) -> List[Tuple]:
     mysql_manager.cursor.execute(query, (limit,))
     return mysql_manager.cursor.fetchall()
 
-def fetch_task_nodes(mysql_manager: MySQLManager, task_id: int) -> List[Tuple]:
+def fetch_task_nodes(mysql_manager: MySQLManager, task_id: int) -> List:
     """从数据库获取指定任务的节点列表。"""
     if mysql_manager.cursor is None:
         raise RuntimeError("数据库游标创建失败")
@@ -142,7 +142,7 @@ def fetch_task_nodes(mysql_manager: MySQLManager, task_id: int) -> List[Tuple]:
     mysql_manager.cursor.execute(query, (task_id,))
     return mysql_manager.cursor.fetchall()
 
-def fetch_node_params(mysql_manager: MySQLManager, node_id: int) -> List[Tuple]:
+def fetch_node_params(mysql_manager: MySQLManager, node_id: int) -> List:
     """从数据库获取指定节点的参数列表。"""
     if mysql_manager.cursor is None:
         raise RuntimeError("数据库游标创建失败")

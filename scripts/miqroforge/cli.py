@@ -6,6 +6,7 @@ import sys
 # 导入 handle 函数
 from miqroforge.handle import (
     handle_show,
+    handle_node,
 )
 
 
@@ -39,7 +40,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     node_parser = subparsers.add_parser("node", help="查看节点模板信息")
     
-    node_parser.add_argument("--add", type=int, help="添加自定义节点")
+    node_parser.add_argument("--add", type=str, help="添加自定义节点")
+
+    node_parser.set_defaults(func=handle_node)
 
     return parser
 

@@ -57,7 +57,7 @@ class ConfigManager:
                     project_config = json.load(f)
                     if project_config:
                         self._merge_config(project_config)
-                        print(f"已加载项目配置文件: {PROJECT_CONFIG_FILE}")
+                        # print(f"已加载项目配置文件: {PROJECT_CONFIG_FILE}")
             except Exception as e:
                 print(f"加载项目配置文件失败: {e}")
         
