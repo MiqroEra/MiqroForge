@@ -1,58 +1,62 @@
-# MiqroForge 安装脚本
+# MiqroForge Installation Script
 
-这是一个自动化安装脚本，用于在Linux系统上快速部署和配置MiqroForge微服务架构平台。脚本集成了完整的容器化运行环境，包括存储、数据库、Web服务等核心组件。
+This is an automated installation script for quickly deploying and configuring the MiqroForge microservice architecture platform on Linux systems. The script integrates a complete containerized runtime environment, including storage, database, web services, and other core components.
 
-## 功能特性
+## Features
 
-- **一键部署**: 自动化安装Docker、Python、NFS、K3s等所有依赖组件
-- **容器化架构**: 基于Docker Compose的微服务部署，支持快速启动和扩展
-- **存储集成**: 内置MinIO对象存储和MySQL数据库，提供完整的数据存储解决方案
-- **Kubernetes就绪**: 自动安装K3s轻量级Kubernetes集群，支持容器编排
-- **网络服务**: 集成NFS文件共享服务，支持分布式文件系统
-- **Web界面**: 提供基于Web的管理界面，支持通过浏览器访问和管理
+- **One-Click Deployment**: Automatically installs Docker, Python, NFS, K3s, and all other dependency components
+- **Containerized Architecture**: Microservice deployment based on Docker Compose, supporting quick startup and scaling
+- **Storage Integration**: Built-in MinIO object storage and MySQL database, providing complete data storage solutions
+- **Kubernetes Ready**: Automatically installs K3s lightweight Kubernetes cluster, supporting container orchestration
+- **Network Services**: Integrated NFS file sharing service, supporting distributed file systems
+- **Web Interface**: Provides web-based management interface, accessible and manageable through browsers
 
-## 系统要求
+## System Requirements
 
-- Ubuntu >= 20.04 操作系统
-- 具有root权限或sudo权限
-- 网络连接（用于下载Docker、Python、NFS、K3s等所有依赖组件）
-- 至少2GB内存和10GB磁盘空间
+- Ubuntu >= 20.04 operating system
+- Root privileges or sudo access
+- Network connection (for downloading Docker, Python, NFS, K3s, and all other dependency components)
+- Minimum 2GB RAM and 10GB disk space
 
-## 使用方法
+## Usage
 
-
-### 克隆仓库后运行
+### Run after cloning the repository
 
 ```bash
-# 克隆仓库
+# Clone the repository
 git clone https://github.com/MiqroEra/MiqroForge.git
 cd MiqroForge
 
-# 运行安装脚本
+# Run the installation script
 sudo ./scripts/install_miqroforge.sh
 ```
 
-## 安装过程
+## Installation Process
 
-脚本会自动执行以下步骤：
-- 安装 Docker 和 Docker Compose
-- 安装 Python >= 3.8 和依赖包
-- 安装 NFS Server
-- 安装 K3s (轻量级 Kubernetes 发行版)
-- 基于 Docker Compose 安装 MiqroForge v1.0
+The script automatically executes the following steps:
+- Install Docker and Docker Compose
+- Install Python >= 3.8 and dependencies
+- Install NFS Server
+- Install K3s (lightweight Kubernetes distribution)
+- Install MiqroForge v1.0 based on Docker Compose
     - [docker-compose.yaml](docker-compose.yaml)
 
-## Kubernetes 安装
+## Kubernetes Installation
 
-本脚本自动安装 K3s (轻量级 Kubernetes 发行版)，如需换成其他 Kubernetes 发行版，请先卸载K3s.
-- 卸载命令：
+This script automatically installs K3s (lightweight Kubernetes distribution). If you need to use other Kubernetes distributions, please uninstall K3s first.
+- Uninstall command:
 ```bash
 sudo k3s-uninstall.sh
 ```
 
-- 其他安装方式：
-    - [kubekey 安装文档](https://github.com/kubesphere/kubekey/blob/master/README_zh-CN.md)
-    - [Kubernetes 官方文档](https://kubernetes.io/zh/docs/setup/)
+- Other installation methods:
+    - [kubekey installation documentation](https://github.com/kubesphere/kubekey/blob/master/README_zh-CN.md)
+    - [Kubernetes official documentation](https://kubernetes.io/docs/setup/)
 
-## 故障排除
-详情请参考: [troubleshooting.md](docs/troubleshooting.md)
+## Troubleshooting
+For details, please refer to: [troubleshooting.md](docs/troubleshooting.md)
+
+## Language
+
+- [English](README.md) (Current)
+- [中文](README_zh_CN.md)
