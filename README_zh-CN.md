@@ -57,4 +57,4 @@ sudo k3s-uninstall.sh
     - [Kubernetes 官方文档](https://kubernetes.io/zh/docs/setup/)
 
 ## 故障排除
-详情请参考: [troubleshooting.md](docs/troubleshooting.md)
+详情请参考: [troubleshooting.md](docs/troubleshooting_zh-CN.md)

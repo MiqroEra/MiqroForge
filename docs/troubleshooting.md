@@ -1,176 +1,176 @@
-### 常见安装问题
+### Common Installation Issues
 
-#### 1. 权限不足错误
+#### 1. Insufficient Permissions Error
 ```bash
-# 错误信息：Please run this script with sudo or root
-# 解决方案：使用sudo运行脚本
+# Error message: Please run this script with sudo or root
+# Solution: Run the script with sudo
 sudo ./scripts/install_miqroforge.sh
 ```
 
-#### 2. 系统版本不兼容
+#### 2. System Version Incompatibility
 ```bash
-# 错误信息：This script only supports Ubuntu 20.04 or higher
-# 解决方案：确保系统版本满足要求
+# Error message: This script only supports Ubuntu 20.04 or higher
+# Solution: Ensure system version meets requirements
 lsb_release -a
-# 或升级到支持的版本
+# Or upgrade to a supported version
 ```
 
-#### 3. Docker安装失败
+#### 3. Docker Installation Failure
 ```bash
-# 检查Docker服务状态
+# Check Docker service status
 sudo systemctl status docker
 
-# 启动Docker服务
+# Start Docker service
 sudo systemctl start docker
 sudo systemctl enable docker
 
-# 检查Docker版本
+# Check Docker version
 docker --version
 docker-compose --version
 ```
 
-#### 4. NFS服务问题
+#### 4. NFS Service Issues
 ```bash
-# 检查NFS服务状态
+# Check NFS service status
 sudo systemctl status nfs-kernel-server
 
-# 重启NFS服务
+# Restart NFS service
 sudo systemctl restart nfs-kernel-server
 
-# 检查NFS导出配置
+# Check NFS export configuration
 cat /etc/exports
 sudo exportfs -a
 
-# 检查NFS端口
+# Check NFS ports
 sudo netstat -tulpn | grep :2049
 ```
 
-#### 5. K3s安装失败
+#### 5. K3s Installation Failure
 ```bash
-# 检查K3s服务状态
+# Check K3s service status
 sudo systemctl status k3s
 
-# 查看K3s日志
+# View K3s logs
 sudo journalctl -u k3s -f
 
-# 重新安装K3s
+# Reinstall K3s
 sudo k3s-uninstall.sh
-# 然后重新运行安装脚本
+# Then run the installation script again
 ```
 
-#### 6. 容器启动失败
+#### 6. Container Startup Failure
 ```bash
-# 查看容器状态
+# View container status
 docker ps -a
 
-# 查看容器日志
+# View container logs
 docker logs miqroforge-web
 docker logs miqroforge-mysql
 docker logs miqroforge-minio
 
-# 重启服务
+# Restart services
 docker compose -f docker-compose.yaml restart
 
-# 重新创建并启动服务
+# Recreate and start services
 docker compose -f docker-compose.yaml up -d --force-recreate
 ```
 
-#### 7. 端口冲突
+#### 7. Port Conflicts
 ```bash
-# 检查端口占用
+# Check port usage
 sudo netstat -tulpn | grep :30080
 sudo netstat -tulpn | grep :3306
 sudo netstat -tulpn | grep :9000
 
-# 修改端口配置（编辑docker-compose.yaml）
-# 将30080改为其他可用端口
+# Modify port configuration (edit docker-compose.yaml)
+# Change 30080 to other available ports
 ```
 
-#### 8. 磁盘空间不足
+#### 8. Insufficient Disk Space
 ```bash
-# 检查磁盘空间
+# Check disk space
 df -h
 
-# 清理Docker镜像和容器
+# Clean up Docker images and containers
 docker system prune -a
 
-# 清理日志文件
+# Clean up log files
 sudo find /var/log -name "*.log" -delete
 ```
 
-#### 9. 网络连接问题
+#### 9. Network Connection Issues
 ```bash
-# 检查网络配置
+# Check network configuration
 ip addr show
 
-# 检查防火墙设置
+# Check firewall settings
 sudo ufw status
 
-# 允许必要端口通过防火墙
+# Allow necessary ports through firewall
 sudo ufw allow 30080
 sudo ufw allow 3306
 sudo ufw allow 9000
 sudo ufw allow 9001
 ```
 
-#### 10. Python依赖问题
+#### 10. Python Dependency Issues
 ```bash
-# 检查Python版本
+# Check Python version
 python3 --version
 
-# 重新安装依赖
+# Reinstall dependencies
 pip install -e . --break-system-packages --force-reinstall
 
-# 清理pip缓存
+# Clean pip cache
 pip cache purge
 ```
 
-### 日志查看
+### Viewing Logs
 
-#### 系统日志
+#### System Logs
 ```bash
-# 查看系统日志
+# View system logs
 sudo journalctl -f
 
-# 查看特定服务日志
+# View specific service logs
 sudo journalctl -u docker -f
 sudo journalctl -u nfs-kernel-server -f
 sudo journalctl -u k3s -f
 ```
 
-#### 应用日志
+#### Application Logs
 ```bash
-# 查看MiqroForge日志
+# View MiqroForge logs
 tail -f ./data/miqroforge/backend/logs/*.log
 
-# 查看Docker容器日志
+# View Docker container logs
 docker logs -f miqroforge-web
 ```
 
-### 重置环境
+### Reset Environment
 
-如果遇到严重问题需要重置环境：
+If you encounter serious issues that require resetting the environment:
 
 ```bash
-# 停止所有服务
+# Stop all services
 docker compose -f docker-compose.yaml down
 
-# 卸载K3s
+# Uninstall K3s
 sudo k3s-uninstall.sh
 
-# 清理数据目录
+# Clean up data directories
 sudo rm -rf /data/miqroforge
 sudo rm -rf ./data
 
-# 重新运行安装脚本
+# Run the installation script again
 sudo ./scripts/install_miqroforge.sh
 ```
 
-### 获取帮助
+### Getting Help
 
-如果以上解决方案无法解决问题：
+If the above solutions cannot resolve your issue:
 
-1. 检查系统日志获取详细错误信息
-2. 确认系统满足最低要求
-3. 在GitHub Issues中搜索类似问题
-4. 提交新的Issue并提供详细的错误信息和系统环境
+1. Check system logs for detailed error information
+2. Confirm system meets minimum requirements
+3. Search for similar issues in GitHub Issues
+4. Submit a new Issue with detailed error information and system environment
