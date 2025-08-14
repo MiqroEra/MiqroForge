@@ -113,7 +113,7 @@ install_k3s(){
         echo "Installing k3s..."
         export LOCAL_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
         curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.24.7+k3s1" sh -s server --bind-address=$LOCAL_IP --node-ip=$LOCAL_IP --node-name=master
-        cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+        
 
         # 验证安装
         echo "Verifying k3s installation..."
@@ -136,12 +136,18 @@ install_k3s(){
     else
         echo "k3s is already installed"
     fi
+
+    mkdir -p ~/.kube
+    cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+
 }
 
 start_miqroforge_web(){
-    export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
-    export NFS_SERVER_EXPORT_PATH=/data/miqroforge
-    export SERVER_PORT=30080
+    echo "export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')" >> ~/.bashrc
+    echo "export NFS_SERVER_EXPORT_PATH=/data/miqroforge" >> ~/.bashrc
+    echo "export SERVER_PORT=30080" >> ~/.bashrc
+    source ~/.bashrc
+
     docker compose -f docker-compose.yaml up -d
     echo "Miqroforge started successfully"
     
