@@ -25,7 +25,6 @@ install_docker(){
 
         systemctl enable docker
         systemctl start docker
-        systemctl status docker
     else
         echo "docker is already installed"
     fi 
@@ -33,13 +32,9 @@ install_docker(){
 
 install_python(){
     # 检查 python 是否安装
-    if ! command -v python3 &> /dev/null; then
-        echo "python is not installed"
-        echo "Installing python..."
-        apt install -y python3 python3-pip python3-venv python-is-python3
-    else
-        echo "python is already installed"
-    fi
+    echo "python is not installed"
+    echo "Installing python..."
+    apt install -y python3 python3-pip python3-venv python-is-python3
 }
 
 install_nfs_server(){
@@ -122,10 +117,22 @@ install_k3s(){
 
         # 验证安装
         echo "Verifying k3s installation..."
-        sleep 10
-        kubectl get nodes
-        kubectl get pods -n kube-system
-        echo "k3s installed successfully"
+
+        # 检测 k3s 服务是否是 active
+        if ! systemctl is-active --quiet k3s; then
+            echo "k3s is not running"
+            systemctl start k3s
+            systemctl enable k3s
+        fi
+        echo "k3s started successfully"
+
+        # 等待 node 状态为 ready
+        while ! kubectl get nodes | grep -q "Ready"; do
+            echo "Waiting for k3s to be ready..."
+            sleep 10
+        done
+        echo "k3s is ready"
+
     else
         echo "k3s is already installed"
     fi
@@ -137,6 +144,26 @@ start_miqroforge_web(){
     export SERVER_PORT=30080
     docker compose -f docker-compose.yaml up -d
     echo "Miqroforge started successfully"
+    
+    # 循环判断 miqroforge-web 容器内的 8080 端口是否启动成功
+    echo "Waiting for miqroforge-web container to be ready..."
+    while true; do
+        # 检查容器是否运行
+        if docker ps | grep -q "miqroforge-web"; then
+            # 检查容器内的 8080 端口是否可访问
+            if docker exec miqroforge-web curl -s http://localhost:8080 > /dev/null 2>&1; then
+                echo "miqroforge-web container is ready and port 8080 is accessible"
+                break
+            else
+                echo "Waiting for port 8080 to be accessible in miqroforge-web container..."
+                sleep 5
+            fi
+        else
+            echo "Waiting for miqroforge-web container to start..."
+            sleep 5
+        fi
+    done
+
     echo "You can access Miqroforge at http://${NFS_SERVER_IP}:${SERVER_PORT}/miqroforge-frontend/"
 }
 
