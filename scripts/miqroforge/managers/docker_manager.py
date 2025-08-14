@@ -87,24 +87,63 @@ class DockerManager:
         return image_names
 
     def check_image_exists(self, image: str) -> bool:
+        if ":" not in image:
+            image = f"{image}:latest"
         # print(f"image: {image}")
         """检查镜像是否存在"""
         for image_name in self.list_images():
             # print(f"image_name: {image_name}")
-            if image in image_name:
+            if image == image_name:
                 return True
         return False
     
-    def pull(self, image: str) -> None:
-        """拉取镜像"""
+    def pull(self, image: str, show_progress: bool = True) -> bool:
+        """拉取镜像
+        
+        Args:
+            image: 镜像名称
+            show_progress: 是否显示进度条，默认为True
+            
+        Returns:
+            拉取是否成功
+        """
         if self.check_image_exists(image):
             print(f"Image {image} already exists, skip pulling.")
             return True
 
         print(f"Pulling image: {image}")
-        self.client.images.pull(image)
-        print(f"Pull image success: {image}")
-        return True
+        
+        try:
+            if show_progress:
+                # 使用带进度显示的拉取方式，实现真正的进度条效果
+                for line in self.client.api.pull(image, stream=True, decode=True):
+                    if 'id' in line and 'status' in line:
+                        if 'progress' in line:
+                            # 显示下载进度，在同一行更新
+                            progress = line.get('progress', '')
+                            status = line.get('status', '')
+                            layer_id = line.get('id', '')
+                            # 使用 \r 回到行首，\033[K 清除当前行
+                            print(f"\r{layer_id}: {status} {progress}", end='', flush=True)
+                        # else:
+                        #     # 显示状态信息，换行显示
+                        #     status = line.get('status', '')
+                        #     layer_id = line.get('id', '')
+                        #     print(f"\n{layer_id}: {status}")
+                
+                # 拉取完成后换行
+                print()
+            else:
+                # 静默拉取
+                self.client.images.pull(image)
+                
+            print(f"Pull image success: {image}")
+            return True
+            
+        except Exception as e:
+            print(f"Pull image failed: {image}, error: {e}")
+            logger.error(f"拉取镜像失败: {image}, 错误: {e}")
+            return False
     
     def connect(self) -> bool:
         """连接Docker"""
@@ -331,5 +370,12 @@ class DockerManager:
             logger.error(f"清理已停止容器时出错: {e}")
             return 0
 
-
+    def find_exposed_port(self, container_name: str, port: int) -> int:
+        """查找指定容器的指定端口"""
+        try:
+            container = self.client.containers.get(container_name)
+            return container.ports[f"{port}/tcp"][0]['HostPort']
+        except Exception as e:
+            logger.error(f"查找端口失败: {e}")
+            return None
         

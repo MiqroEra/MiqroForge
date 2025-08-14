@@ -1,8 +1,11 @@
-from uuid import uuid4
-from ..managers.mysql_manager import MySQLManager
 from typing import List
+from ..managers.mysql_manager import MySQLManager
 from ..managers.docker_manager import DockerManager
 import json
+import subprocess
+import sys
+import requests
+import time
 
 def handle_node_add(args) -> None:
 
@@ -32,8 +35,99 @@ def handle_node_add(args) -> None:
     if node_json is None:
         print(f"get node.json failed")
         return
-
+    # 插入节点
     insert_node(node_json, image)
+
+    # 导入 k3s containerd 中
+    import_node_to_k3s(image)
+
+    restart_miqroforge()
+
+def restart_miqroforge() -> None:
+    print(f"Restarting miqroforge-web, please wait...")
+    subprocess.run(["docker","restart","miqroforge-web"], check=True)
+    
+    docker_manager = DockerManager()
+    if not docker_manager.connect():
+        raise RuntimeError("无法连接到Docker")
+    
+    port = docker_manager.find_exposed_port('miqroforge-web',80)
+    if port is None:
+        print(f"Failed to find exposed port of miqroforge-web")
+    else:
+        url = f"http://127.0.0.1:{port}/api/doc.html"
+        max_retry = 30
+        retry = 0
+        while True:
+            response = requests.get(url)
+            if response.status_code == 200:
+                print(f"miqroforge-web restarted successfully!")
+                break
+
+            time.sleep(1)
+            retry += 1
+            if retry > max_retry:
+                print(f"Failed to restart miqroforge-web after {max_retry} retries")
+                break
+
+    # if result.returncode == 0:
+    #     print(f"miqroforge-web restarted successfully!")
+    # else:
+    #     print(f"Failed to restart miqroforge-web")
+
+
+def import_node_to_k3s(image: str) -> None:
+    """导入镜像到 k3s containerd 中，并显示实时进度"""
+    
+    # 检查镜像是否已经在 k3s 中存在
+    try:
+        awk = "awk 'NR>1{print $1\":\"$2}'"
+        result = subprocess.run(
+            ["sh", "-c", f"crictl images | {awk} | grep '{image}'"], 
+            capture_output=True, 
+            text=True, 
+            check=False
+        )
+        output = result.stdout.strip()
+        print(f"check image {image} in k3s: {output}, returncode: {result.returncode}")
+        if result.returncode == 0:
+            print(f"Image {image} already exists in k3s, skip importing.")
+            return
+    except Exception as e:
+        print(f"Warning: Failed to check existing images: {e}")
+    
+    print(f"Importing image to k3s: {image}")
+    
+    try:
+        image_name = image.split("/")[-1].split(":")[0]
+        subprocess.run(["docker","save","-o",f"/tmp/{image_name}.tar",image])
+        subprocess.run(["k3s","ctr","images","import",f"/tmp/{image_name}.tar"],check=True)
+        subprocess.run(["rm","-f",f"/tmp/{image_name}.tar"])
+        
+        print(f"\nImage {image} imported to k3s successfully!")
+            
+    except subprocess.CalledProcessError as e:
+        print(f"\nFailed to import image {image} to k3s: {e}")
+    except KeyboardInterrupt:
+        print("\nImport interrupted by user")
+    except Exception as e:
+        print(f"\nError during import: {e}")
+
+def fix_node_json(node_json: dict, key: str) -> None:
+    if key not in node_json:
+        node_json[key] = []
+    elif not isinstance(node_json[key],list):
+        node_json[key] = []
+    fix_ui(node_json)
+
+def fix_ui(items: dict) -> None:
+    for item in items['web']:
+        if 'ui' in item:
+            if isinstance(item['ui'],str):
+                item['ui'] = {item['ui']:''}
+            elif not isinstance(item['ui'],dict):
+                item['ui'] = {}
+
 
 def insert_node(node_json: dict, image: str) -> None:
     mysql_manager = MySQLManager()
@@ -46,18 +140,15 @@ def insert_node(node_json: dict, image: str) -> None:
         if not node_id:
             raise ValueError("Node ID cannot be empty")
 
-        node_input = node_json.get('input', {})
-        node_output = node_json.get('output', {})
-        
-        if 'web' not in node_input:
-            node_input['web'] = []
-        if 'web' not in node_output:
-            node_output['web'] = []
-        if 'upstream' not in node_input:
-            node_input['upstream'] = []
-        if 'downstream' not in node_output:
-            node_output['downstream'] = []
+        if 'input' not in node_json:
+            raise ValueError("Node input cannot be empty")
+        if 'output' not in node_json:
+            raise ValueError("Node output cannot be empty")
 
+        fix_node_json(node_json['input'],'upstream')
+        fix_node_json(node_json['output'],'downstream')
+
+        print(f"node_json: {node_json}")
         print(f"Starting to process node, ID: {node_id}")
         
         # 先查询节点是否已存在
@@ -67,7 +158,10 @@ def insert_node(node_json: dict, image: str) -> None:
         existing_node = mysql_manager.cursor.fetchone()
         
         if existing_node:
-            print(f"Node {node_id} already exists, performing update operation...")
+            user_input = input(f'Node {node_id} already exists, would you want to update? (y/n) ')
+            if user_input.strip().lower() != 'y':
+                print(f"Node {node_id} not updated. exit...")
+                sys.exit(0)
             
             # 更新现有节点
             update_sql = '''
@@ -130,7 +224,7 @@ def insert_node(node_json: dict, image: str) -> None:
                 contact,
                 image,
                 execution_command                
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             '''
             
             # 准备插入参数
