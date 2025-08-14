@@ -190,7 +190,8 @@ install_miqroforge_cli(){
         echo "miqroforge is not installed"
         echo "Installing miqroforge..."
         if [ "${VERSION_ID%.*}" -lt 22 ]; then
-            pip install -e .
+            # Python 3.8-3.9 使用 setup.py 进行可编辑模式安装
+            pip install -e . --no-build-isolation
         else
             pip install -e . --break-system-packages
         fi
