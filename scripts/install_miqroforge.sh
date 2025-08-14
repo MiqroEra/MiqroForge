@@ -143,11 +143,20 @@ install_k3s(){
 }
 
 start_miqroforge_web(){
-    echo "export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')" >> ~/.bashrc
-    echo "export NFS_SERVER_EXPORT_PATH=/data/miqroforge" >> ~/.bashrc
-    echo "export SERVER_PORT=30080" >> ~/.bashrc
-    source ~/.bashrc
 
+    if ! grep -q "NFS_SERVER_IP" ~/.bashrc; then
+        echo "export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')" >> ~/.bashrc
+    fi
+
+    if ! grep -q "NFS_SERVER_EXPORT_PATH" ~/.bashrc; then
+        echo "export NFS_SERVER_EXPORT_PATH=/data/miqroforge" >> ~/.bashrc
+    fi
+
+    if ! grep -q "SERVER_PORT" ~/.bashrc; then
+        echo "export SERVER_PORT=30080" >> ~/.bashrc
+    fi
+
+    source ~/.bashrc
     docker compose -f docker-compose.yaml up -d
     echo "Miqroforge started successfully"
     
