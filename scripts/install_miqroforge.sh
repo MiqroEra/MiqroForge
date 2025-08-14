@@ -2,9 +2,11 @@
 
 # 检查系统
 check_os(){
-    # 检查系统是否是 Ubuntu > 20.04，如果不是，则退出
-    if [ "$(uname -s)" != "Linux" ] || [ "$(uname -r | cut -d'.' -f1)" -lt 5 ]; then
-        echo "This script only supports Ubuntu 20.04 or higher"
+    # 检查系统是否是 Ubuntu >= 20.04，如果不是，则退出
+    source /etc/os-release
+    # split VERSION_ID by .
+    if [ "$ID" != "ubuntu" ] || [ "${VERSION_ID%.*}" -lt 20 ]; then
+        echo "This script only supports Ubuntu >= 20.04 System"
         exit 1
     fi
 }
@@ -187,7 +189,11 @@ install_miqroforge_cli(){
     if ! command -v miqroforge &> /dev/null; then
         echo "miqroforge is not installed"
         echo "Installing miqroforge..."
-        pip install -e . --break-system-packages
+        if [ "${VERSION_ID%.*}" -lt 22 ]; then
+            pip install -e .
+        else
+            pip install -e . --break-system-packages
+        fi
     else
         echo "miqroforge is already installed"
     fi
