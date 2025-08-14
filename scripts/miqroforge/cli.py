@@ -3,6 +3,7 @@
 import argparse
 import sys
 from textwrap import dedent
+from typing import List, Optional
 
 # 导入 handle 函数
 from miqroforge.handle import (
@@ -49,7 +50,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Optional[List[str]] = None) -> int:
     """主入口函数，供命令行工具调用"""
     parser = build_parser()
     args = parser.parse_args(argv)
