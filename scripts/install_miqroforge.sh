@@ -158,7 +158,10 @@ start_miqroforge_web(){
         echo "export SERVER_PORT=30080" >> ~/.bashrc
     fi
 
-    source ~/.bashrc
+    export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
+    export NFS_SERVER_EXPORT_PATH=/data/miqroforge
+    export SERVER_PORT=30080
+
     docker compose -f docker-compose.yaml up -d
     echo "Miqroforge started successfully"
     
