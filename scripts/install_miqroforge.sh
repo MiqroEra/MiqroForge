@@ -22,6 +22,10 @@ install_docker(){
         echo "docker is not installed"
         echo "Installing docker..."
         apt install -y docker.io docker-compose-v2
+
+        systemctl enable docker
+        systemctl start docker
+        systemctl status docker
     else
         echo "docker is already installed"
     fi 
