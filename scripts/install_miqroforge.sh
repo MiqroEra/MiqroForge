@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
+export NFS_SERVER_EXPORT_PATH=/data/miqroforge
+export SERVER_PORT=30080
+
 # 检查系统
 check_os(){
     # 检查系统是否是 Ubuntu >= 20.04，如果不是，则退出
@@ -158,10 +162,6 @@ start_miqroforge_web(){
         echo "export SERVER_PORT=30080" >> ~/.bashrc
     fi
 
-    export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
-    export NFS_SERVER_EXPORT_PATH=/data/miqroforge
-    export SERVER_PORT=30080
-
     docker compose -f docker-compose.yaml up -d
     echo "Miqroforge started successfully"
     
@@ -205,7 +205,8 @@ install_miqroforge_cli(){
         pip install -e . --break-system-packages
     fi
 
-    miqroforge --help
+    echo "miqroforge command line tool installed successfully"
+
 }
 
 
@@ -217,3 +218,10 @@ install_nfs_server
 install_k3s
 start_miqroforge_web
 install_miqroforge_cli
+
+echo "Miqroforge installed successfully"
+echo "----------------------------------------------------------------------------"
+echo "You can access Miqroforge at http://${NFS_SERVER_IP}:${SERVER_PORT}/miqroforge-frontend/"
+echo "----------------------------------------------------------------------------"
+echo "use 'miqroforge --help' to get more information"
+echo "----------------------------------------------------------------------------"
