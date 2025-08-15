@@ -189,18 +189,20 @@ start_miqroforge_web(){
 
 install_miqroforge_cli(){
     # 判断命令 miqroforge 是否存在，不存在则安装
-    if ! command -v miqroforge &> /dev/null; then
+    if command -v miqroforge &> /dev/null; then
+        echo "miqroforge is already installed"
+        echo "Updating miqroforge..."
+    else
         echo "miqroforge is not installed"
         echo "Installing miqroforge..."
-        if [ "${VERSION_ID%.*}" -lt 22 ]; then
-            # Python 3.8-3.9 使用 setup.py 进行可编辑模式安装
-            pip install -r requirements.txt
-            pip install -e . --no-build-isolation
-        else
-            pip install -e . --break-system-packages
-        fi
+    fi
+    
+    if [ "${VERSION_ID%.*}" -lt 22 ]; then
+        # Python 3.8-3.9 使用 setup.py 进行可编辑模式安装
+        pip install -r requirements.txt
+        pip install -e . --no-build-isolation
     else
-        echo "miqroforge is already installed"
+        pip install -e . --break-system-packages
     fi
 
     miqroforge --help
