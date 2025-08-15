@@ -59,16 +59,16 @@ services:
       - "NFS_SERVER_EXPORT_PATH=${NFS_SERVER_EXPORT_PATH:?You must set the NFS_SERVER_EXPORT_PATH environment variable}"
     volumes:
       - ./data/miqroforge/backend/logs:/opt/project/miqroforge/backend/logs
-      - /root/.kube/config:/opt/project/miqroforge/backend/misc/k8s/config
+      - /etc/rancher/k3s/k3s.yaml:/opt/project/miqroforge/backend/misc/k8s/config
       - "${NFS_SERVER_EXPORT_PATH}:${NFS_SERVER_EXPORT_PATH}"
     networks:
       - default
     healthcheck:
-      test: ["CMD-SHELL", "netstat -tuln | grep :8080 || exit 1"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 20s
       retries: 3
-      start_period: 60s
+      start_period: 40s
 
 networks:
   default:

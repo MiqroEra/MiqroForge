@@ -56,6 +56,7 @@ def restart_miqroforge() -> None:
         print(f"Failed to find exposed port of miqroforge-web")
     else:
         url = f"http://127.0.0.1:{port}/api/doc.html"
+        print(f"url: {url}")
         max_retry = 30
         retry = 0
         while True:

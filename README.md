@@ -51,10 +51,21 @@ This script automatically installs K3s (lightweight Kubernetes distribution). If
 sudo k3s-uninstall.sh
 ```
 
-- Other installation methods:
+- Manually install Kubernetes, please refer to the following documents for reference:
     - [kubekey installation documentation](https://github.com/kubesphere/kubekey/blob/master/README.md)
     - [Kubernetes official documentation](https://kubernetes.io/docs/setup/)
-
+- Modify miqroforge-web volume config in [docker-compose.yaml](docker-compose.yaml):
+> Note: You need to replace `"<kubeconfig path>"` with the actual path to the kubeconfig file.
+```yaml
+... 
+   web:
+    ...
+    volumes:
+      ...
+      - "<kubeconfig path>:/opt/project/miqroforge/backend/misc/k8s/config"
+    ...
+...
+```
 ## Test
 
 For details, please refer to: [test_cases.ipynb](tests/test_cases.ipynb)

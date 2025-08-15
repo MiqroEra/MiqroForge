@@ -52,10 +52,21 @@ sudo ./scripts/install_miqroforge.sh
 sudo k3s-uninstall.sh
 ```
 
-- 其他安装方式：
+- 手动安装 Kubernetes, 以下是参考文档：
     - [kubekey 安装文档](https://github.com/kubesphere/kubekey/blob/master/README_zh-CN.md)
     - [Kubernetes 官方文档](https://kubernetes.io/zh/docs/setup/)
 
+- 修改 [docker-compose.yaml](docker-compose.yaml) 中的 miqroforge-web 卷配置：
+```yaml
+... 
+   web:
+    ...
+    volumes:
+      ...
+      - "<kubeconfig path>:/opt/project/miqroforge/backend/misc/k8s/config"
+    ...
+    ...
+```
 ## 测试
 
 详情请参考: [test.ipynb](tests/test_cases.ipynb)

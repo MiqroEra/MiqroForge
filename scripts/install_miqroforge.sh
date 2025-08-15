@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export NFS_SERVER_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
+export LOCAL_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
+export NFS_SERVER_IP=$LOCAL_IP
 export NFS_SERVER_EXPORT_PATH=/data/miqroforge
 export SERVER_PORT=30080
 
@@ -117,9 +118,7 @@ install_k3s(){
     if ! command -v k3s &> /dev/null; then
         echo "k3s is not installed"
         echo "Installing k3s..."
-        export LOCAL_IP=$(ip route get 1.1.1.1 | awk '/src/ {print $7}')
-        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.24.7+k3s1" sh -s server --bind-address=$LOCAL_IP --node-ip=$LOCAL_IP --node-name=master
-        
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.24.7+k3s1" sh -s server --node-ip=$LOCAL_IP --bind-address=$LOCAL_IP  --node-name=master
 
         # 验证安装
         echo "Verifying k3s installation..."
@@ -143,8 +142,8 @@ install_k3s(){
         echo "k3s is already installed"
     fi
 
-    mkdir -p ~/.kube
-    cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+    # mkdir -p ~/.kube
+    # cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 
 }
 
