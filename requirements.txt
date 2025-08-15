@@ -1,6 +1,7 @@
 # MiqroForge 项目依赖包
 
 # 核心依赖
+requests>=2.26.0
 kubernetes>=28.1.0
 docker>=6.1.0
 mysql-connector-python>=8.0.0
