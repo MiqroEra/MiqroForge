@@ -99,6 +99,8 @@ install_k3s(){
         echo "k3s is already installed"
     fi
 
+    kubectl create namespace miqroforge
+
     # mkdir -p ~/.kube
     # cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 
