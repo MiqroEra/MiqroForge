@@ -14,6 +14,7 @@ check_os(){
         echo "This script only supports Ubuntu >= 20.04 System"
         exit 1
     fi
+    echo "OS check passed"
 }
 
 check_sudo_or_root(){
@@ -21,6 +22,7 @@ check_sudo_or_root(){
         echo "Please run this script with sudo or root"
         exit 1
     fi
+    echo "sudo or root check passed"
 }
 
 # 安装docker
@@ -45,60 +47,14 @@ install_python(){
 }
 
 install_nfs_server(){
-    # 检查 nfs-kernel-server 是否安装
-    # 检查 NFS 内核服务器是否已安装
-    check_nfs_installed() {
-        # 方法1：检查包是否已安装
-        if dpkg -l nfs-kernel-server >/dev/null 2>&1; then
-            return 0
-        fi
-        
-        # 方法3：检查服务是否存在
-        if systemctl list-unit-files | grep -q nfs-kernel-server; then
-            return 0
-        fi
-        
-        return 1
-    }
 
-    # 检查服务状态
-    check_nfs_status() {
-        if systemctl is-active --quiet nfs-kernel-server 2>/dev/null; then
-            echo "running"
-        elif systemctl is-enabled nfs-kernel-server 2>/dev/null; then
-            echo "installed"
-        else
-            echo "not_found"
-        fi
-    }
-
-    if check_nfs_installed; then
-        status=$(check_nfs_status)
-        case $status in
-            "running")
-                echo "NFS Server is running"
-                ;;
-            "installed")
-                echo "NFS Server is installed but not running"
-                echo "Starting NFS kernel server..."
-                systemctl start nfs-kernel-server
-                systemctl enable nfs-kernel-server
-                echo "NFS kernel server started"
-                ;;
-            *)
-                echo "NFS Server is installed but in abnormal state"
-                exit 1
-                ;;
-        esac
-    else
-        echo "NFS 内核服务器未安装"
-        echo "Installing NFS kernel server..."
-        apt install -y nfs-kernel-server
-        echo "NFS kernel server installed"
-        systemctl start nfs-kernel-server
-        systemctl enable nfs-kernel-server
+    echo "Installing NFS kernel server..."
+    apt install -y nfs-kernel-server
+    echo "NFS kernel server installed"
+    systemctl start nfs-kernel-server
+    systemctl enable nfs-kernel-server
+    echo "NFS kernel server started"
        
-    fi
 
     # 判断 /etc/exports 是否配置 /data 共享，如果没有，则配置
     if ! grep -q "/data" /etc/exports; then
@@ -118,6 +74,7 @@ install_k3s(){
     if ! command -v k3s &> /dev/null; then
         echo "k3s is not installed"
         echo "Installing k3s..."
+        apt install -y curl
         curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.24.7+k3s1" sh -s server --node-ip=$LOCAL_IP --bind-address=$LOCAL_IP  --node-name=master
 
         # 验证安装
