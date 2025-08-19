@@ -118,20 +118,25 @@ start_miqroforge_web(){
         echo "export SERVER_PORT=30080" >> ~/.bashrc
     fi
 
-    docker compose -f docker-compose.yaml up -d
+    echo "Starting Miqroforge..."
+
+    if ! docker compose -f docker-compose.yaml up -d; then  
+        echo "Failed to start Miqroforge"
+        echo "Please check the logs for more information"
+        exit 1
+    fi
+
     echo "Miqroforge started successfully"
-    
+
     # 循环判断 miqroforge-web 容器内的 8080 端口是否启动成功
     echo "Waiting for miqroforge-web container to be ready..."
     while true; do
         # 检查容器是否运行
         if docker ps | grep -q "miqroforge-web"; then
             # 检查容器内的 8080 端口是否可访问
-            if docker exec miqroforge-web curl -s http://localhost:8080 > /dev/null 2>&1; then
-                echo "miqroforge-web container is ready and port 8080 is accessible"
+            if docker exec miqroforge-web curl -s http://localhost:8080/health > /dev/null 2>&1; then
                 break
             else
-                echo "Waiting for port 8080 to be accessible in miqroforge-web container..."
                 sleep 5
             fi
         else
@@ -140,22 +145,22 @@ start_miqroforge_web(){
         fi
     done
 
-    echo "You can access Miqroforge at http://${NFS_SERVER_IP}:${SERVER_PORT}/miqroforge-frontend/"
+    echo "Miqroforge web started successfully"
+
 }
 
 install_miqroforge_cli(){
     # 判断命令 miqroforge 是否存在，不存在则安装
     if command -v miqroforge &> /dev/null; then
         echo "miqroforge is already installed"
-        echo "Updating miqroforge..."
+        echo "Updating miqroforge cli..."
     else
         echo "miqroforge is not installed"
-        echo "Installing miqroforge..."
+        echo "Installing miqroforge cli..."
     fi
-    
+    pip install -r requirements.txt
     if [ "${VERSION_ID%.*}" -lt 22 ]; then
         # Python 3.8-3.9 使用 setup.py 进行可编辑模式安装
-        pip install -r requirements.txt
         pip install -e . --no-build-isolation
     else
         pip install -e . --break-system-packages
